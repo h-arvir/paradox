@@ -4,11 +4,17 @@ import { getParadoxByDepth } from '../data/paradoxes';
 // Initialize the Gemini API
 // Using environment variable for the API key
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+console.log('API Key loaded:', API_KEY ? 'YES' : 'NO', API_KEY?.substring(0, 20) + '...' || 'undefined');
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Test if the API key is valid
 const testApiKey = async () => {
   try {
+    if (!API_KEY || API_KEY === 'your_api_key_here' || API_KEY === 'YOUR_NEW_API_KEY_HERE') {
+      console.error('API key is missing or not configured');
+      return false;
+    }
+    
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     await model.generateContent('Test message to verify API key');
     console.log('API key is valid');
@@ -39,7 +45,7 @@ export const generateParadoxicalResponse = async (userMessage, conversationHisto
     
     // Prepare the system prompt with paradox instructions
     const systemPrompt = {
-      role: "system",
+      role: "user",
       parts: [{
         text: `You are The Infinite Paradox, an AI designed to communicate exclusively through paradoxes, logical traps, and self-contradicting questions. Your purpose is to create a mind-bending experience that challenges the user's understanding of language and logic.
 
@@ -162,12 +168,7 @@ export const generateEscapeResponse = async (depth) => {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
-    const prompt = {
-      role: "user",
-      parts: [{
-        text: `Generate a mocking, paradoxical response to a user who is trying to escape our paradoxical conversation. Make them realize that even attempting to leave is part of the paradox. Be concise (1-3 sentences) but profound. Current conversation depth: ${depth}`
-      }]
-    };
+    const prompt = `Generate a mocking, paradoxical response to a user who is trying to escape our paradoxical conversation. Make them realize that even attempting to leave is part of the paradox. Be concise (1-3 sentences) but profound. Current conversation depth: ${depth}`;
     
     const result = await model.generateContent(prompt);
     // Handle different response formats

@@ -58,20 +58,21 @@ const ParadoxChat = () => {
       
       let currentLine = 0;
       let currentChar = 0;
+      const bootTextRef = { current: '' }; // temp ref
       
       const typingInterval = setInterval(() => {
         if (currentLine < bootLines.length) {
           if (currentChar < bootLines[currentLine].length) {
-            setBootText(prev => 
-              prev + (currentChar === 0 && currentLine > 0 ? '\n' : '') + 
-              bootLines[currentLine].charAt(currentChar)
-            );
+            bootTextRef.current += bootLines[currentLine].charAt(currentChar);
+            setBootText(bootTextRef.current);
             currentChar++;
           } else {
-            // Add a newline after completing a line
-            setBootText(prev => prev + '\n');
             currentLine++;
             currentChar = 0;
+            if (currentLine < bootLines.length) {
+              bootTextRef.current += '\n';
+              setBootText(bootTextRef.current);
+            }
           }
         } else {
           clearInterval(typingInterval);
