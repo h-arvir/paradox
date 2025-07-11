@@ -27,12 +27,100 @@ const ParadoxChat = () => {
   // Reference to the message container for auto-scrolling
   const messageContainerRef = useRef(null);
   
-  // Auto-scroll to the bottom when messages change
+  // Track if user has manually scrolled up and the last scroll position
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+  const [scrollLocked, setScrollLocked] = useState(false);
+  
+  // Handle scroll events to detect when user manually scrolls
+  const handleScroll = () => {
+    if (!messageContainerRef.current || scrollLocked) return;
+    
+    const container = messageContainerRef.current;
+    const currentScrollTop = container.scrollTop;
+    const isAtBottom = container.scrollHeight - currentScrollTop - container.clientHeight < 20;
+    
+    // Detect if user is actively scrolling up (against auto-scroll)
+    const isScrollingUp = currentScrollTop < lastScrollTop;
+    
+    // If user is scrolling up or is not at the bottom
+    if (isScrollingUp || !isAtBottom) {
+      setUserHasScrolled(true);
+      // Lock scrolling for a short period to prevent flickering
+      setScrollLocked(true);
+      setTimeout(() => setScrollLocked(false), 1000);
+    } else if (isAtBottom) {
+      // Only reset if user has scrolled all the way to the bottom
+      setUserHasScrolled(false);
+    }
+    
+    // Update last scroll position
+    setLastScrollTop(currentScrollTop);
+  };
+  
+  // Helper function for smooth scrolling
+  const smoothScrollToBottom = (duration = 300) => {
+    if (!messageContainerRef.current) return;
+    
+    const container = messageContainerRef.current;
+    const targetPosition = container.scrollHeight - container.clientHeight;
+    const startPosition = container.scrollTop;
+    const distance = targetPosition - startPosition;
+    
+    if (distance <= 0) return; // Already at bottom
+    
+    let startTime = null;
+    
+    const animateScroll = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Easing function for smooth deceleration
+      const easeOutCubic = progress => 1 - Math.pow(1 - progress, 3);
+      
+      container.scrollTop = startPosition + distance * easeOutCubic(progress);
+      
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animateScroll);
+      } else {
+        container.scrollTop = targetPosition; // Ensure we end exactly at the bottom
+        setUserHasScrolled(false);
+      }
+    };
+    
+    requestAnimationFrame(animateScroll);
+  };
+  
+  // Auto-scroll to the bottom when new messages are added (not during typing)
   useEffect(() => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      // Only auto-scroll on new messages, not during typing
+      if (!isLoading) {
+        smoothScrollToBottom(300); // Smooth scroll over 300ms
+        setUserHasScrolled(false);
+      }
     }
-  }, [messages]);
+  }, [messages.length, isLoading]); // Trigger on message count change and when loading stops
+  
+  // Set up a very gentle scroll check during typing - only if user hasn't scrolled
+  useEffect(() => {
+    // Only auto-scroll when the AI is typing (isLoading is true) and user hasn't scrolled up
+    if (!isLoading || userHasScrolled || scrollLocked) return;
+    
+    // Use a single timeout instead of interval to be less aggressive
+    const scrollTimeout = setTimeout(() => {
+      if (messageContainerRef.current) {
+        const container = messageContainerRef.current;
+        // Only scroll if we're already very close to the bottom
+        if (container.scrollHeight - container.scrollTop - container.clientHeight < 20) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+    }, 1000); // Check once per second, much less aggressive
+    
+    return () => clearTimeout(scrollTimeout);
+  }, [isLoading, userHasScrolled, scrollLocked, lastScrollTop]);
   
   // Check if API key is missing or invalid
   useEffect(() => {
@@ -115,27 +203,28 @@ const ParadoxChat = () => {
   
   return (
     <div className="chat-container">
-      <header style={{ marginBottom: "1.5rem", marginTop: "0.5rem" }}>
+      <header style={{ marginBottom: "1.5rem", marginTop: "0rem" }}>
         <pre 
           className="glitch" 
-          data-text="THOUGHTFUL CHAT"
+          data-text=""
           style={{
             color: "#00FF41",
             textAlign: "center",
             fontSize: "0.75rem",
-            marginBottom: "0.5rem"
+            marginBottom: "0.5rem",
+            marginTop: "-1rem" /* Move the ASCII art up */
           }}
         >
 {`
-   ____  ____  ____  ____  ____ 
-  ||T ||||H ||||O ||||U ||||G ||
-  ||__||||__||||__||||__||||__||
-  |/__\\||/__\\||/__\\||/__\\||/__\\|
+    ____  ____  ____  ____  
+  ||T ||||H ||||Y ||||N ||
+  ||__||||__||||__||||__||
+  |/__\\||/__\\||/__\\||/__\\|
 `}
         </pre>
         <h1 
           className="glitch" 
-          data-text="THOUGHTFUL CONVERSATIONS"
+          data-text="Chat With Me Nigga"
           style={{
             fontSize: "1.25rem",
             fontFamily: "'Press Start 2P', Courier, monospace",
@@ -146,7 +235,7 @@ const ParadoxChat = () => {
             letterSpacing: "0.2em"
           }}
         >
-          THOUGHTFUL CONVERSATIONS
+          Chat With Me Nigga
         </h1>
         {/* <p style={{
           fontSize: "0.75rem",
@@ -184,7 +273,11 @@ const ParadoxChat = () => {
         </div>
       </div>
       
-      <div className="message-container" ref={messageContainerRef}>
+      <div 
+        className="message-container" 
+        ref={messageContainerRef}
+        onScroll={handleScroll}
+      >
         {messages.map((message, index) => (
           <ChatMessage 
             key={message.id} 
@@ -198,6 +291,8 @@ const ParadoxChat = () => {
             <TypingIndicator />
           </div>
         )}
+        
+        {/* Back to bottom button removed as requested */}
       </div>
       
       <ChatInput

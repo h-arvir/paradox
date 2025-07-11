@@ -21,3 +21,61 @@
 .message-container::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.7);
 }
+
+/* Typewriter cursor blinking animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+  display: inline-block;
+  margin-left: 2px;
+  position: relative;
+  top: 1px;
+}
+
+/* Console text styling */
+.console-text {
+  font-family: 'Press Start 2P', Courier, monospace;
+  line-height: 1.6;
+  position: relative;
+}
+
+/* Read More button hover effect */
+.read-more-button:hover {
+  background-color: rgba(0, 255, 65, 0.1);
+  transform: translateY(-1px);
+}
+
+.read-more-button:active {
+  transform: translateY(1px);
+}
+
+/* Progressive text reveal animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Occasional typing glitch effect */
+@keyframes typeGlitch {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; transform: translateX(1px); }
+}
+
+.type-glitch {
+  animation: typeGlitch 0.1s;
+}
+
+/* Scroll-to-bottom button removed as requested */
+
+/* Make the message container position relative for absolute positioning of buttons */
+.message-container {
+  position: relative;
+}

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TypewriterText from './TypewriterText';
+import ProgressiveText from './ProgressiveText';
 
 /**
  * Component for rendering individual chat messages
@@ -9,6 +11,7 @@ import React from 'react';
  */
 const ChatMessage = ({ message, glitchEffect = false }) => {
   const { text, isUser } = message;
+  const [animationComplete, setAnimationComplete] = useState(false);
   
   // Random offset for misalignment
   const randomOffset = Math.floor(Math.random() * 5) - 2;
@@ -51,17 +54,56 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
     return transforms[Math.floor(Math.random() * transforms.length)];
   };
   
-  // Format text with line breaks for display
-  const formatTextWithLineBreaks = (text) => {
-    if (!text) return '';
+  // Determine which text rendering method to use based on message length and type
+  const renderMessageContent = () => {
+    const processedText = isUser ? text : addGlitchChars(text);
     
-    // Split by newlines and map each line to a JSX element
-    return text.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        {index < text.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ));
+    // For user messages, just show immediately
+    if (isUser) {
+      return (
+        <TypewriterText 
+          text={processedText} 
+          isUser={true} 
+          onComplete={() => setAnimationComplete(true)}
+        />
+      );
+    }
+    
+    // For AI messages, use typewriter effect to simulate console typing
+    // For very long messages, use progressive reveal instead of collapsible functionality
+    if (text.length > 500) {
+      return (
+        <ProgressiveText 
+          text={processedText} 
+          isUser={false} 
+          typingSpeed={20} // Slightly faster typing for long messages
+          paragraphDelay={300}
+        />
+      );
+    }
+    
+    // For medium-length AI messages with multiple paragraphs, use progressive reveal
+    const paragraphs = text.split('\n\n').filter(p => p.trim() !== '');
+    if (paragraphs.length > 1) {
+      return (
+        <ProgressiveText 
+          text={processedText} 
+          isUser={false} 
+          typingSpeed={30}
+          paragraphDelay={300}
+        />
+      );
+    }
+    
+    // For all other AI messages, use simple typewriter effect
+    return (
+      <TypewriterText 
+        text={processedText} 
+        isUser={false}
+        speed={30}
+        onComplete={() => setAnimationComplete(true)}
+      />
+    );
   };
   
   return (
@@ -77,9 +119,9 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
         <span className="mr-2 opacity-70">
           {isUser ? 'YOU>' : '∞>'}
         </span>
-        <p className={glitchEffect ? 'glitch' : ''} data-text={text}>
-          {formatTextWithLineBreaks(addGlitchChars(text))}
-        </p>
+        <div className={glitchEffect ? 'glitch' : ''} data-text={text}>
+          {renderMessageContent()}
+        </div>
       </div>
       
       {/* Randomly add scanlines to some messages */}
