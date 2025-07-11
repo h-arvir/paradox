@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ParadoxChat from './components/ParadoxChat';
+import ThoughtfulChat from './components/ParadoxChat';
 import LoadingScreen from './components/LoadingScreen';
 import './App.css';
 
@@ -21,7 +21,7 @@ function App() {
   
   return (
     <div className="min-h-screen bg-paradox-dark text-paradox-light">
-      {isLoading ? <LoadingScreen /> : <ParadoxChat />}
+      {isLoading ? <LoadingScreen /> : <ThoughtfulChat />}
     </div>
   );
 }

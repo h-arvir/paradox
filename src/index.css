@@ -113,12 +113,23 @@
     position: relative;
   }
   
+  .message p {
+    white-space: pre-line; /* Preserves line breaks */
+  }
+  
   .message:nth-child(odd) {
     --offset: 3;
   }
   
   .message:nth-child(even) {
     --offset: -2;
+  }
+  
+  /* Styling for bullet points */
+  .message p:has(br + •),
+  .message p:first-child:has(•) {
+    padding-left: 1rem;
+    text-indent: -1rem;
   }
   
   .user-message {

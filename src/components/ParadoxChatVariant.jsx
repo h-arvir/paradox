@@ -7,10 +7,10 @@ import ErrorMessage from './ErrorMessage';
 import useDeepChat from '../hooks/useDeepChat';
 
 /**
- * Main component for the Thoughtful Chat interface
+ * Main component for the Paradox Chat interface
  * @returns {JSX.Element} The rendered component
  */
-const ParadoxChat = () => {
+const ParadoxChatVariant = () => {
   const [apiKeyError, setApiKeyError] = useState(false);
   const [bootSequence, setBootSequence] = useState(true);
   const [bootText, setBootText] = useState('');
@@ -22,7 +22,7 @@ const ParadoxChat = () => {
     handleInputChange, 
     handleSubmit,
     error
-  } = useDeepChat({ variant: 'thoughtful' });
+  } = useDeepChat({ variant: 'paradox' });
   
   // Reference to the message container for auto-scrolling
   const messageContainerRef = useRef(null);
@@ -47,12 +47,12 @@ const ParadoxChat = () => {
     if (bootSequence) {
       const bootLines = [
         'INITIALIZING SYSTEM...',
-        'LOADING THOUGHTFUL ENGINE v1.0.0...',
+        'LOADING PARADOX ENGINE v1.0.0...',
         'CALIBRATING KNOWLEDGE CIRCUITS...',
         'INDEXING FACTS DATABASE...',
         'LOADING THEORIES & PERSPECTIVES...',
         'PREPARING PARADOX COLLECTIONS...',
-        'SYSTEM READY: WELCOME TO THOUGHTFUL CONVERSATIONS',
+        'SYSTEM READY: WELCOME TO PARADOX CONVERSATIONS',
       ];
       
       let currentLine = 0;
@@ -118,7 +118,7 @@ const ParadoxChat = () => {
       <header style={{ marginBottom: "1.5rem", marginTop: "0.5rem" }}>
         <pre 
           className="glitch" 
-          data-text="THOUGHTFUL CHAT"
+          data-text="PARADOX CHAT"
           style={{
             color: "#00FF41",
             textAlign: "center",
@@ -128,14 +128,14 @@ const ParadoxChat = () => {
         >
 {`
    ____  ____  ____  ____  ____ 
-  ||T ||||H ||||O ||||U ||||G ||
+  ||P ||||A ||||R ||||A ||||D ||
   ||__||||__||||__||||__||||__||
   |/__\\||/__\\||/__\\||/__\\||/__\\|
 `}
         </pre>
         <h1 
           className="glitch" 
-          data-text="THOUGHTFUL CONVERSATIONS"
+          data-text="PARADOX CONVERSATIONS"
           style={{
             fontSize: "1.25rem",
             fontFamily: "'Press Start 2P', Courier, monospace",
@@ -146,18 +146,8 @@ const ParadoxChat = () => {
             letterSpacing: "0.2em"
           }}
         >
-          THOUGHTFUL CONVERSATIONS
+          PARADOX CONVERSATIONS
         </h1>
-        {/* <p style={{
-          fontSize: "0.75rem",
-          textAlign: "center",
-          color: "#00FF41",
-          opacity: "0.7",
-          marginTop: "0.5rem",
-          fontFamily: "'Press Start 2P', Courier, monospace"
-        }}>
-          Where logic loops and reason unravels
-        </p> */}
         <div style={{
           width: "100%",
           borderTop: "1px solid #00FF41",
@@ -222,4 +212,4 @@ const ParadoxChat = () => {
   );
 };
 
-export default ParadoxChat;
+export default ParadoxChatVariant;

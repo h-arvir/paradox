@@ -51,6 +51,19 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
     return transforms[Math.floor(Math.random() * transforms.length)];
   };
   
+  // Format text with line breaks for display
+  const formatTextWithLineBreaks = (text) => {
+    if (!text) return '';
+    
+    // Split by newlines and map each line to a JSX element
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+  
   return (
     <div 
       className={`message ${isUser ? 'user-message' : 'bot-message'}`}
@@ -65,7 +78,7 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
           {isUser ? 'YOU>' : '∞>'}
         </span>
         <p className={glitchEffect ? 'glitch' : ''} data-text={text}>
-          {addGlitchChars(text)}
+          {formatTextWithLineBreaks(addGlitchChars(text))}
         </p>
       </div>
       
