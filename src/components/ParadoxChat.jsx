@@ -274,12 +274,24 @@ const ParadoxChat = () => {
             {isLoading ? 'PROCESSING' : 'READY'}
           </span>
         </div>
-        
-        {/* Mood Selector */}
-        <MoodSelector 
-          currentMood={currentMood} 
-          onMoodChange={handleMoodChange} 
-        />
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "0.5rem" 
+                  }}>
+          <span style={{
+            fontSize: "0.75rem",
+            color: "#00FF41",
+            fontFamily: "'Press Start 2P', Courier, monospace"
+          }}>
+            MOOD:
+          </span>
+          {/* Mood Selector */}
+          <MoodSelector 
+            currentMood={currentMood} 
+            onMoodChange={handleMoodChange} 
+          />
+        </div>
       </div>
       
       <div 
