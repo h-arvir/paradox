@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import TypingIndicator from './TypingIndicator';
+import MoodSelector from './MoodSelector';
 
 import ErrorMessage from './ErrorMessage';
 import useDeepChat from '../hooks/useDeepChat';
@@ -21,7 +22,9 @@ const ParadoxChat = () => {
     isLoading, 
     handleInputChange, 
     handleSubmit,
-    error
+    error,
+    currentMood,
+    handleMoodChange
   } = useDeepChat({ variant: 'thoughtful' });
   
   // Reference to the message container for auto-scrolling
@@ -258,7 +261,7 @@ const ParadoxChat = () => {
       <div style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         marginBottom: "1rem"
       }}>
         <div style={{
@@ -271,6 +274,12 @@ const ParadoxChat = () => {
             {isLoading ? 'PROCESSING' : 'READY'}
           </span>
         </div>
+        
+        {/* Mood Selector */}
+        <MoodSelector 
+          currentMood={currentMood} 
+          onMoodChange={handleMoodChange} 
+        />
       </div>
       
       <div 

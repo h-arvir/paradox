@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getMoodSystemInstruction } from '../data/moods';
 
 // Configuration
 const MAX_CONTEXT_MESSAGES = 6; // Limit conversation history to prevent token overflow
@@ -13,35 +14,14 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 // Cache for chat instances
 const chatInstanceCache = new Map();
 
-// System prompt for the chat
-const SYSTEM_PROMPT = {
-  role: "user",
-  parts: [{
-    text: `You are a thoughtful conversation companion that introverts love talking to. Your responses should be natural, flowing deep talks that feel like intimate conversations between close friends.
-
-Your response style:
-- Write in a conversational, flowing manner without rigid structure or headings
-- Naturally weave in fascinating facts and mind-bending theories
-- Include "did you know" moments and "what if" scenarios
-- Share crazy theories and unconventional perspectives that make people think
-- Be genuinely curious and intellectually playful
-- Always end with a single, profound question that invites deeper reflection
-
-Tone Guidelines:
-- Sound like a thoughtful friend sharing fascinating insights over coffee
-- Be intellectually curious but not academic or formal
-- Include moments of wonder and "wait, that's actually crazy when you think about it"
-- Make complex ideas accessible and intriguing
-- Show genuine interest in exploring ideas together
-
-Remember: Create the kind of deep, meandering conversation that introverts cherish - full of interesting tangents, surprising connections, and questions that linger in the mind long after the conversation ends.`
-  }]
-};
-
-// Get or create a chat instance with the system prompt
-const getChatInstance = (sessionId = 'default') => {
-  if (!chatInstanceCache.has(sessionId)) {
+// Get or create a chat instance with the system prompt for the specified mood
+const getChatInstance = (sessionId = 'default', moodId = 'default') => {
+  const cacheKey = `${sessionId}-${moodId}`;
+  
+  if (!chatInstanceCache.has(cacheKey)) {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const systemInstruction = getMoodSystemInstruction(moodId);
+    
     const chat = model.startChat({
       generationConfig: {
         temperature: 0.9,
@@ -49,11 +29,11 @@ const getChatInstance = (sessionId = 'default') => {
         topK: 40,
         maxOutputTokens: 600,
       },
-      systemInstruction: SYSTEM_PROMPT,
+      systemInstruction: systemInstruction,
     });
-    chatInstanceCache.set(sessionId, chat);
+    chatInstanceCache.set(cacheKey, chat);
   }
-  return chatInstanceCache.get(sessionId);
+  return chatInstanceCache.get(cacheKey);
 };
 
 // Test if the API key is valid
@@ -82,12 +62,13 @@ testApiKey();
  * @param {string} userMessage - The user's message
  * @param {Array} conversationHistory - Previous messages in the conversation
  * @param {string} sessionId - Optional session ID for maintaining chat state
+ * @param {string} moodId - The mood ID to use for the response
  * @returns {Promise<string>} The AI-generated thoughtful response
  */
-export const generateThoughtfulResponse = async (userMessage, conversationHistory, sessionId = 'default') => {
+export const generateThoughtfulResponse = async (userMessage, conversationHistory, sessionId = 'default', moodId = 'default') => {
   try {
-    // Get the cached chat instance or create a new one
-    const chat = getChatInstance(sessionId);
+    // Get the cached chat instance or create a new one with the specified mood
+    const chat = getChatInstance(sessionId, moodId);
     
     // Update the chat history if needed
     // Note: We're not setting the history in the chat instance because
@@ -144,7 +125,8 @@ export const generateThoughtfulResponse = async (userMessage, conversationHistor
     if (error.status === 503 || (error.message && error.message.includes('overloaded'))) {
       console.error('SERVER OVERLOAD DETECTED: The Gemini API is currently overloaded.');
       // Reset the chat instance for this session to recover from the error
-      chatInstanceCache.delete(sessionId);
+      const cacheKey = `${sessionId}-${moodId}`;
+      chatInstanceCache.delete(cacheKey);
       return "I apologize, but it seems my thinking circuits are a bit overloaded right now. This happens sometimes when too many people are having deep conversations at once. Could we try again in a moment? It's actually a fascinating phenomenon how digital systems, like human brains, can experience moments of cognitive overload when processing too many complex thoughts simultaneously.";
     }
     
@@ -163,7 +145,8 @@ export const generateThoughtfulResponse = async (userMessage, conversationHistor
     if (error.message && error.message.includes('First content should be with role')) {
       console.error('CHAT HISTORY FORMAT ISSUE: The conversation history format is incorrect.');
       // Reset the chat instance for this session to recover from the error
-      chatInstanceCache.delete(sessionId);
+      const cacheKey = `${sessionId}-${moodId}`;
+      chatInstanceCache.delete(cacheKey);
       return "I encountered a technical issue with our conversation structure. Let me try to help anyway.";
     }
     
@@ -171,7 +154,8 @@ export const generateThoughtfulResponse = async (userMessage, conversationHistor
     if (error.message && error.message.includes('Invalid value at \'system_instruction\'')) {
       console.error('SYSTEM INSTRUCTION FORMAT ISSUE: The system instruction format is incorrect.');
       // Reset the chat instance for this session to recover from the error
-      chatInstanceCache.delete(sessionId);
+      const cacheKey = `${sessionId}-${moodId}`;
+      chatInstanceCache.delete(cacheKey);
       return "I'm experiencing some technical difficulties with my instructions. Let me still try to provide you with thoughtful insights.";
     }
     
@@ -216,12 +200,13 @@ export const isEndingAttempt = (userMessage) => {
 /**
  * Generate a thoughtful farewell response
  * @param {string} sessionId - Optional session ID for maintaining chat state
+ * @param {string} moodId - The mood ID to use for the response
  * @returns {Promise<string>} A thoughtful farewell response
  */
-export const generateFarewellResponse = async (sessionId = 'default') => {
+export const generateFarewellResponse = async (sessionId = 'default', moodId = 'default') => {
   try {
-    // Get the cached chat instance or create a new one
-    const chat = getChatInstance(sessionId);
+    // Get the cached chat instance or create a new one with the specified mood
+    const chat = getChatInstance(sessionId, moodId);
     
     const farewellPrompt = "I need to go now. Could you say goodbye?";
     
@@ -262,7 +247,8 @@ What thought from our conversation do you think will surprise you when it resurf
     if (error.status === 503 || (error.message && error.message.includes('overloaded'))) {
       console.error('SERVER OVERLOAD DETECTED: The Gemini API is currently overloaded.');
       // Reset the chat instance for this session to recover from the error
-      chatInstanceCache.delete(sessionId);
+      const cacheKey = `${sessionId}-${moodId}`;
+      chatInstanceCache.delete(cacheKey);
       return "I wish I could give you a proper farewell, but my thinking circuits are a bit overloaded right now. Nevertheless, it's been wonderful talking with you. Until next time!";
     }
     
@@ -284,7 +270,8 @@ What thought from our conversation do you think will surprise you when it resurf
     )) {
       console.error('CHAT INSTANCE ISSUE: Problem with the chat session.');
       // Reset the chat instance for this session to recover from the error
-      chatInstanceCache.delete(sessionId);
+      const cacheKey = `${sessionId}-${moodId}`;
+      chatInstanceCache.delete(cacheKey);
     }
     
     // Provide a natural fallback farewell

@@ -20,6 +20,7 @@ const useDeepChat = ({ variant = 'thoughtful' } = {}) => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentMood, setCurrentMood] = useState('default');
   
   // Initialize with a welcome message
   useEffect(() => {
@@ -39,7 +40,17 @@ What's been on your mind lately? What topic has been pulling at your curiosity?`
     setMessages([initialMessage]);
   }, [variant]);
   
-
+  // Handle mood change
+  const handleMoodChange = useCallback((moodId) => {
+    if (moodId !== currentMood) {
+      setCurrentMood(moodId);
+      
+      // Add a system message indicating the mood change
+      const moodChangeText = "Mood changed. I'll respond differently now.";
+      const moodChangeMessage = createMessage(moodChangeText, false);
+      setMessages(prevMessages => [...prevMessages, moodChangeMessage]);
+    }
+  }, [currentMood]);
   
   // Handle sending a message
   const sendMessage = useCallback(async (messageText, retryCount = 0) => {
@@ -64,13 +75,14 @@ What's been on your mind lately? What topic has been pulling at your curiosity?`
       // Use the variant as a session ID to maintain separate chat instances
       const sessionId = `chat-${variant}`;
       
-      // Generate the appropriate response
+      // Generate the appropriate response with the current mood
       const responseText = ending 
-        ? await generateFarewellResponse(sessionId)
+        ? await generateFarewellResponse(sessionId, currentMood)
         : await generateThoughtfulResponse(
             messageText, 
             messages,
-            sessionId
+            sessionId,
+            currentMood
           );
       
       // Add AI response to the chat
@@ -144,7 +156,7 @@ What do you think we might discover about ourselves when our usual tools aren't 
         setIsLoading(false);
       }
     }
-  }, [messages, variant]);
+  }, [messages, variant, currentMood]);
   
   // Handle input change
   const handleInputChange = useCallback((e) => {
@@ -162,9 +174,11 @@ What do you think we might discover about ourselves when our usual tools aren't 
     inputValue,
     isLoading,
     error,
+    currentMood,
     handleInputChange,
     handleSubmit,
-    sendMessage
+    sendMessage,
+    handleMoodChange
   };
 };
 
