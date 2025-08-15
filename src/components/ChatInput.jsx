@@ -79,6 +79,14 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
       inputRef.current.focus();
     }
   };
+
+  // Handle key down events
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
   
   return (
     <div className="relative">
@@ -107,6 +115,7 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
                 ref={inputRef}
                 value={value}
                 onChange={onChange}
+                onKeyDown={handleKeyDown}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 placeholder=""
