@@ -319,21 +319,6 @@ const ParadoxChat = () => {
   |/__\\||/__\\||/__\\||/__\\|
 `}
         </pre>
-        <h1 
-          className="glitch" 
-          data-text="Thoughtful Conversations"
-          style={{
-            fontSize: "1.25rem",
-            fontFamily: "'Press Start 2P', Courier, monospace",
-            textAlign: "center",
-            color: "#FF00FF",
-            marginBottom: "0.25rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.2em"
-          }}
-        >
-          Thoughtful Conversations
-        </h1>
         <div style={{
           width: "100%",
           borderTop: "1px solid #00FF41",
