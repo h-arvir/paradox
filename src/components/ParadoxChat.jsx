@@ -29,6 +29,15 @@ const ParadoxChat = () => {
     handleMoodChange
   } = useDeepChat({ variant: 'thoughtful' });
   
+  // Enhanced submit handler that includes immediate scroll
+  const handleSubmitWithScroll = (e) => {
+    handleSubmit(e);
+    // Immediately scroll to bottom when user submits a message
+    setTimeout(() => {
+      smoothScrollToBottom(200);
+    }, 50); // Small delay to ensure the message is added to DOM
+  };
+  
   // Reference to the message container for auto-scrolling
   const messageContainerRef = useRef(null);
   
@@ -409,7 +418,7 @@ const ParadoxChat = () => {
       <ChatInput
         value={inputValue}
         onChange={handleInputChange}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitWithScroll}
         isLoading={isLoading}
       />
       
