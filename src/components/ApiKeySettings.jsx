@@ -152,7 +152,8 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
             data-text=""
             style={{
               fontSize: "0.9rem",
-              lineHeight: "1.2"
+              lineHeight: "1.2",
+              marginBottom:40
             }}
           >
 {`
@@ -162,7 +163,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
   |/__\\||/__\\||/__\\|    |/__\\||/__\\||/__\\||/__\\||/__\\||/__\\||/__\\||/__\\|
 `}
           </pre>
-          <h2 
+          {/* <h2 
             className="text-green-400 font-bold glitch"
             data-text="GEMINI API KEY CONFIGURATION"
             style={{
@@ -180,7 +181,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
               borderTop: "2px solid #00FF41",
               opacity: "0.7"
             }}
-          ></div>
+          ></div> */}
         </div>
       </div>
 
@@ -207,7 +208,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 placeholder="AIzaSy..."
                 disabled={isValidating}
                 style={{
-                  width: "100%",
+                  width: "98%",
                   backgroundColor: "#000000",
                   border: "2px solid #00FF41",
                   color: "#00FF41",
@@ -353,6 +354,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
               style={{
                 fontSize: "0.9rem",
                 textTransform: "uppercase",
+                marginTop:30, 
                 letterSpacing: "0.1em"
               }}
             >
@@ -408,7 +410,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 lineHeight: "1.5"
               }}
             >
-              <div style={{ color: "#FFFF00", marginBottom: "0.75rem", fontSize: "0.75rem" }}>
+              {/* <div style={{ color: "#FFFF00", marginBottom: "0.75rem", fontSize: "0.75rem" }}>
                 🔒 PRIVACY & SECURITY:
               </div>
               <ul className="space-y-1 text-yellow-300">
@@ -417,7 +419,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 <li>• You maintain full control over your API usage</li>
                 <li>• You can remove or change it anytime</li>
                 <li>• All API calls go directly to Google's servers</li>
-              </ul>
+              </ul> */}
             </div>
           </div>
         </div>
@@ -425,10 +427,12 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
 
       {/* Footer with Close Hint */}
       <div 
-        className="mt-6 pt-4 border-t-2 border-green-400 text-center"
+        className=" text-center"
         style={{
           fontSize: "0.7rem",
           color: "#FFFF00",
+          marginBottom: 300, 
+          marginTop:70, 
           opacity: "0.9"
         }}
       >
