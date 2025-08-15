@@ -20,7 +20,13 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-paradox-dark text-paradox-light">
+    <div 
+      className="min-h-screen text-paradox-light"
+      style={{
+        backgroundColor: "#000000",
+        minHeight: "100vh"
+      }}
+    >
       {isLoading ? <LoadingScreen /> : <ThoughtfulChat />}
     </div>
   );

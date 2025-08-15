@@ -27,6 +27,7 @@ Thoughtful Chat is a sophisticated conversational AI application that creates th
 - **Smart Message Management**: Optimized conversation history to prevent token overflow
 - **Error Handling**: Comprehensive error handling with user-friendly messages
 - **Performance Optimized**: Efficient rendering and state management
+- **🆕 User-Configurable API Keys**: In-app API key management with secure local storage
 
 ## Technologies Used
 
@@ -54,7 +55,7 @@ Thoughtful Chat is a sophisticated conversational AI application that creates th
 ### Prerequisites
 
 - Node.js (v16 or higher)
-- A Gemini API key from Google AI Studio
+- A Gemini API key from Google AI Studio (can be configured in-app)
 
 ### Installation
 
@@ -69,17 +70,52 @@ Thoughtful Chat is a sophisticated conversational AI application that creates th
    npm install
    ```
 
-3. Create a `.env` file in the root directory and add your Gemini API key:
-   ```bash
-   VITE_GEMINI_API_KEY=your_api_key_here
-   ```
-
-4. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-5. Open your browser and navigate to `http://localhost:5173`
+4. Open your browser and navigate to `http://localhost:5173`
+
+5. **Configure your API key** (choose one option):
+   - **Option A**: Use the in-app configuration (recommended)
+   - **Option B**: Set up environment variable (for developers)
+
+## API Key Configuration
+
+### 🆕 Option A: In-App Configuration (Recommended)
+
+The application now features a user-friendly API key management system:
+
+1. **First Launch**: If no API key is configured, you'll see a setup screen
+2. **Get Your Key**: Visit [Google AI Studio](https://ai.google.dev) to get a free API key
+3. **Configure**: Click "CONFIGURE API KEY" and enter your key
+4. **Manage**: Access API settings anytime via the "API" button in the top-right corner
+
+**Features:**
+- ✅ Real-time API key validation
+- ✅ Secure local storage (never sent to our servers)
+- ✅ Switch between personal and default keys
+- ✅ User-friendly error handling
+- ✅ No technical setup required
+
+### Option B: Environment Variable (For Developers)
+
+Create a `.env` file in the root directory:
+```bash
+VITE_GEMINI_API_KEY=your_api_key_here
+```
+
+### Getting Your Gemini API Key
+
+1. Visit [Google AI Studio](https://ai.google.dev)
+2. Sign in with your Google account
+3. Navigate to "Get API key"
+4. Create a new API key
+5. Copy the key (starts with "AIzaSy...")
+6. Use it in the application
+
+**Privacy Note:** Your API key is stored locally in your browser and never transmitted to our servers.
 
 ## How It Works
 
@@ -107,9 +143,10 @@ src/
 │   ├── ChatMessage.jsx  # Individual message component
 │   ├── ChatInput.jsx    # Input handling with terminal styling
 │   ├── MoodSelector.jsx # AI personality selector
+│   ├── ApiKeySettings.jsx # 🆕 API key management
 │   └── ...
 ├── services/           # AI integration services
-│   └── aiService.js    # Gemini API integration
+│   └── aiService.js    # Gemini API integration with key management
 ├── hooks/             # Custom React hooks
 │   └── useDeepChat.js # Main chat state management
 ├── data/              # Configuration and mood data

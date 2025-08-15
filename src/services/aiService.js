@@ -6,10 +6,28 @@ const MAX_CONTEXT_MESSAGES = 6; // Limit conversation history to prevent token o
                                  // Gemini 1.5 Flash has ~32K token limit
                                  // Adjust based on your average message length
 
+// Get API key from localStorage or environment variable
+const getApiKey = () => {
+  const userApiKey = localStorage.getItem('gemini_api_key');
+  if (userApiKey) {
+    return userApiKey;
+  }
+  return import.meta.env.VITE_GEMINI_API_KEY;
+};
+
 // Initialize the Gemini API
-// Using environment variable for the API key
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY);
+let genAI = null;
+const initializeGenAI = () => {
+  const apiKey = getApiKey();
+  if (apiKey && apiKey !== 'your_api_key_here') {
+    genAI = new GoogleGenerativeAI(apiKey);
+    return true;
+  }
+  return false;
+};
+
+// Initialize on module load
+initializeGenAI();
 
 // Cache for chat instances
 const chatInstanceCache = new Map();
@@ -19,6 +37,15 @@ const getChatInstance = (sessionId = 'default', moodId = 'default') => {
   const cacheKey = `${sessionId}-${moodId}`;
   
   if (!chatInstanceCache.has(cacheKey)) {
+    // Ensure genAI is initialized with current API key
+    if (!genAI) {
+      initializeGenAI();
+    }
+    
+    if (!genAI) {
+      throw new Error('API key not configured');
+    }
+    
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const systemInstruction = getMoodSystemInstruction(moodId);
     
@@ -37,14 +64,16 @@ const getChatInstance = (sessionId = 'default', moodId = 'default') => {
 };
 
 // Test if the API key is valid
-const testApiKey = async () => {
+const testApiKey = async (apiKey = null) => {
   try {
-    if (!API_KEY || API_KEY === 'your_api_key_here' || API_KEY === 'YOUR_NEW_API_KEY_HERE') {
+    const keyToTest = apiKey || getApiKey();
+    if (!keyToTest || keyToTest === 'your_api_key_here' || keyToTest === 'YOUR_NEW_API_KEY_HERE') {
       console.error('API key is missing or not configured');
       return false;
     }
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const testGenAI = new GoogleGenerativeAI(keyToTest);
+    const model = testGenAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     await model.generateContent('Test message to verify API key');
     console.log('API key is valid');
     return true;
@@ -54,8 +83,29 @@ const testApiKey = async () => {
   }
 };
 
+// Function to refresh the API key and clear cache
+export const refreshApiKey = () => {
+  const success = initializeGenAI();
+  if (success) {
+    // Clear all cached chat instances to use new API key
+    chatInstanceCache.clear();
+  }
+  return success;
+};
+
+// Function to check if API key is available
+export const hasValidApiKey = () => {
+  const apiKey = getApiKey();
+  return apiKey && apiKey !== 'your_api_key_here' && apiKey !== 'YOUR_NEW_API_KEY_HERE';
+};
+
+// Export the test function for external use
+export { testApiKey };
+
 // Run the test when the module loads
-testApiKey();
+if (hasValidApiKey()) {
+  testApiKey();
+}
 
 /**
  * Generate a thoughtful response using Gemini
