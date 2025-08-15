@@ -6,20 +6,16 @@ const MAX_CONTEXT_MESSAGES = 6; // Limit conversation history to prevent token o
                                  // Gemini 1.5 Flash has ~32K token limit
                                  // Adjust based on your average message length
 
-// Get API key from localStorage or environment variable
+// Get API key from localStorage only - users must provide their own
 const getApiKey = () => {
-  const userApiKey = localStorage.getItem('gemini_api_key');
-  if (userApiKey) {
-    return userApiKey;
-  }
-  return import.meta.env.VITE_GEMINI_API_KEY;
+  return localStorage.getItem('gemini_api_key');
 };
 
 // Initialize the Gemini API
 let genAI = null;
 const initializeGenAI = () => {
   const apiKey = getApiKey();
-  if (apiKey && apiKey !== 'your_api_key_here') {
+  if (apiKey) {
     genAI = new GoogleGenerativeAI(apiKey);
     return true;
   }
@@ -43,7 +39,7 @@ const getChatInstance = (sessionId = 'default', moodId = 'default') => {
     }
     
     if (!genAI) {
-      throw new Error('API key not configured');
+      throw new Error('No API key configured. Please add your Gemini API key.');
     }
     
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -67,8 +63,8 @@ const getChatInstance = (sessionId = 'default', moodId = 'default') => {
 const testApiKey = async (apiKey = null) => {
   try {
     const keyToTest = apiKey || getApiKey();
-    if (!keyToTest || keyToTest === 'your_api_key_here' || keyToTest === 'YOUR_NEW_API_KEY_HERE') {
-      console.error('API key is missing or not configured');
+    if (!keyToTest) {
+      console.error('No API key provided');
       return false;
     }
     
@@ -96,7 +92,7 @@ export const refreshApiKey = () => {
 // Function to check if API key is available
 export const hasValidApiKey = () => {
   const apiKey = getApiKey();
-  return apiKey && apiKey !== 'your_api_key_here' && apiKey !== 'YOUR_NEW_API_KEY_HERE';
+  return apiKey && apiKey.trim() !== '';
 };
 
 // Export the test function for external use
@@ -185,10 +181,11 @@ export const generateThoughtfulResponse = async (userMessage, conversationHistor
       error.message.includes('API key') || 
       error.message.includes('authentication') ||
       error.message.includes('credentials') ||
-      error.message.includes('unauthorized')
+      error.message.includes('unauthorized') ||
+      error.message.includes('No API key configured')
     )) {
-      console.error('API KEY ISSUE DETECTED. Please check your Gemini API key.');
-      return "I'm experiencing authentication issues. Please check the API key configuration.";
+      console.error('API KEY ISSUE DETECTED. Please add your Gemini API key.');
+      return "I need an API key to function. Please click the API button in the top-right corner to add your Gemini API key.";
     }
     
     // Check if it's a chat history formatting issue
@@ -309,8 +306,8 @@ What thought from our conversation do you think will surprise you when it resurf
       error.message.includes('credentials') ||
       error.message.includes('unauthorized')
     )) {
-      console.error('API KEY ISSUE DETECTED. Please check your Gemini API key.');
-      return "I'm experiencing authentication issues. Please check the API key configuration.";
+      console.error('API KEY ISSUE DETECTED. Please add your Gemini API key.');
+      return "I need an API key to function properly. Please configure your Gemini API key to continue our conversations.";
     }
     
     // Check if it's a chat instance issue

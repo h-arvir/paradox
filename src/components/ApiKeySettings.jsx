@@ -92,17 +92,6 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
     setValidationError('');
   };
 
-  const handleUseDefaultKey = () => {
-    const defaultKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (defaultKey && defaultKey !== 'your_api_key_here') {
-      localStorage.removeItem('gemini_api_key');
-      onApiKeySet(null); // Use default key
-      onClose();
-    } else {
-      setValidationError('No default API key is configured');
-    }
-  };
-
   return (
     <div 
       className="fixed inset-0 bg-black z-50 flex flex-col relative"
@@ -152,8 +141,8 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
             data-text=""
             style={{
               fontSize: "0.9rem",
-              lineHeight: "1.2",
-              marginBottom:40
+              marginBottom:30,
+              lineHeight: "1.2"
             }}
           >
 {`
@@ -198,7 +187,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 letterSpacing: "0.1em"
               }}
             >
-              ENTER YOUR API KEY:
+              ENTER YOUR GEMINI API KEY:
             </h3>
             <div className="relative mb-4">
               <input
@@ -277,7 +266,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 }}
                 className="hover:bg-green-300 disabled:hover:bg-gray-600"
               >
-                {isValidating ? 'VALIDATING...' : 'SAVE & VALIDATE'}
+                {isValidating ? 'VALIDATING...' : 'SAVE & VALIDATE API KEY'}
               </button>
 
               {apiKey && (
@@ -302,27 +291,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 </button>
               )}
 
-              <button
-                onClick={handleUseDefaultKey}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#000000",
-                  color: "#0099FF",
-                  border: "2px solid #0099FF",
-                  padding: "1rem",
-                  fontSize: "0.8rem",
-                  fontFamily: "'Press Start 2P', Courier, monospace",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  minHeight: "3rem"
-                }}
-                className="hover:bg-blue-900"
-              >
-                USE DEFAULT KEY
-              </button>
-
-              {/* Additional Close Button */}
+              {/* Close Button */}
               <button
                 onClick={onClose}
                 style={{
@@ -354,11 +323,11 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
               style={{
                 fontSize: "0.9rem",
                 textTransform: "uppercase",
-                marginTop:30, 
-                letterSpacing: "0.1em"
+                letterSpacing: "0.1em",
+                marginTop: 40
               }}
             >
-              HOW TO GET YOUR API KEY:
+              HOW TO GET YOUR FREE API KEY:
             </h3>
             
             <div 
@@ -385,7 +354,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-300 mr-3 font-bold">3.</span>
-                  <span className="text-green-400">Navigate to "Get API key" section</span>
+                  <span className="text-green-400">Click "Get API key" in the top menu</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-300 mr-3 font-bold">4.</span>
@@ -397,12 +366,32 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-300 mr-3 font-bold">6.</span>
-                  <span className="text-green-400">Paste it in the input field</span>
+                  <span className="text-green-400">Paste it in the input field above</span>
                 </li>
               </ol>
             </div>
 
-            <div 
+            {/* <div 
+              className="border-2 border-cyan-400 p-4 mb-6"
+              style={{
+                backgroundColor: "#000000",
+                fontSize: "0.65rem",
+                lineHeight: "1.5"
+              }}
+            >
+              <div style={{ color: "#00FFFF", marginBottom: "0.75rem", fontSize: "0.75rem" }}>
+                💡 FREE TIER INFORMATION:
+              </div>
+              <ul className="space-y-1 text-cyan-300">
+                <li>• Google provides generous free API usage</li>
+                <li>• No credit card required for basic usage</li>
+                <li>• Perfect for personal projects and learning</li>
+                <li>• Rate limits are very reasonable for chat apps</li>
+                <li>• You can monitor usage in Google AI Studio</li>
+              </ul>
+            </div> */}
+
+            {/* <div 
               className="border-2 border-yellow-400 p-4"
               style={{
                 backgroundColor: "#000000",
@@ -410,7 +399,7 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 lineHeight: "1.5"
               }}
             >
-              {/* <div style={{ color: "#FFFF00", marginBottom: "0.75rem", fontSize: "0.75rem" }}>
+              <div style={{ color: "#FFFF00", marginBottom: "0.75rem", fontSize: "0.75rem" }}>
                 🔒 PRIVACY & SECURITY:
               </div>
               <ul className="space-y-1 text-yellow-300">
@@ -419,20 +408,20 @@ const ApiKeySettings = ({ onApiKeySet, onClose }) => {
                 <li>• You maintain full control over your API usage</li>
                 <li>• You can remove or change it anytime</li>
                 <li>• All API calls go directly to Google's servers</li>
-              </ul> */}
-            </div>
+              </ul>
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Footer with Close Hint */}
       <div 
-        className=" text-center"
+        className=" border-green-400 text-center"
         style={{
           fontSize: "0.7rem",
           color: "#FFFF00",
-          marginBottom: 300, 
-          marginTop:70, 
+          marginTop: 70,
+          marginBottom: 70,
           opacity: "0.9"
         }}
       >
