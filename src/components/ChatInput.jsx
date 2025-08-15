@@ -82,9 +82,9 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
   
   return (
     <div className="relative">
-      <div className="text-xs text-neonGreen font-terminal mb-2 opacity-70">
+      {/* <div className="text-xs text-neonGreen font-terminal mb-2 opacity-70">
         ENTER YOUR PARADOX:
-      </div>
+      </div> */}
       
       <form onSubmit={handleSubmit} className="input-container">
         <div className="relative flex-1 flex items-start">
