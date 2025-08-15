@@ -6,15 +6,15 @@ import TypewriterText from './TypewriterText';
  * @param {Object} props - Component props
  * @param {string} props.text - The full text content
  * @param {boolean} props.isUser - Whether this is user text
- * @param {number} props.typingSpeed - Speed of typing animation in ms (default: 30)
- * @param {number} props.paragraphDelay - Delay between paragraphs in ms (default: 300)
+ * @param {number} props.typingSpeed - Speed of typing animation in ms (default: 10)
+ * @param {number} props.paragraphDelay - Delay between paragraphs in ms (default: 150)
  * @returns {JSX.Element} The rendered component
  */
 const ProgressiveText = ({ 
   text, 
   isUser = false, 
-  typingSpeed = 30,
-  paragraphDelay = 300
+  typingSpeed = 10,
+  paragraphDelay = 150
 }) => {
   const containerRef = useRef(null);
   
@@ -35,10 +35,6 @@ const ProgressiveText = ({
   // State to track which paragraphs are visible
   const [visibleParagraphs, setVisibleParagraphs] = useState(1);
   const [paragraphComplete, setParagraphComplete] = useState(Array(paragraphs.length).fill(false));
-  
-  // Remove auto-scrolling from ProgressiveText component
-  // Let the parent component (ParadoxChat) handle all scrolling
-  // This prevents competing scroll behaviors
   
   // When a paragraph's typing animation completes, show the next paragraph after a delay
   const handleParagraphComplete = (index) => {

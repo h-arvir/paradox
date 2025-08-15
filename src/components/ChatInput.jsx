@@ -10,20 +10,10 @@ import React, { useState, useEffect, useRef } from 'react';
  * @returns {JSX.Element} The rendered component
  */
 const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
-  const [cursorVisible, setCursorVisible] = useState(true);
   const [glitchInput, setGlitchInput] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState(0);
+  const [showCaret, setShowCaret] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef(null);
-  const textRef = useRef(null);
-  
-  // Blinking cursor effect
-  useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setCursorVisible(prev => !prev);
-    }, 500);
-    
-    return () => clearInterval(cursorInterval);
-  }, []);
   
   // Random input glitch effect
   useEffect(() => {
@@ -35,6 +25,15 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
     }, 3000);
     
     return () => clearInterval(glitchInterval);
+  }, []);
+  
+  // Caret blinking effect
+  useEffect(() => {
+    const caretInterval = setInterval(() => {
+      setShowCaret(prev => !prev);
+    }, 500);
+    
+    return () => clearInterval(caretInterval);
   }, []);
   
   // Auto-focus the input field when component mounts
@@ -51,10 +50,13 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
     }
   }, [isLoading]);
   
-  // Update cursor position when value changes
+  // Auto-resize textarea based on content
   useEffect(() => {
-    if (textRef.current) {
-      setCursorPosition(textRef.current.offsetWidth);
+    if (inputRef.current) {
+      // Reset height to auto to get the correct scrollHeight
+      inputRef.current.style.height = 'auto';
+      // Set the height to scrollHeight to expand the textarea
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
   }, [value]);
   
@@ -71,7 +73,7 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
     }
   };
   
-  // Focus input when clicked anywhere in the form
+  // Handle click on container to focus input
   const handleContainerClick = () => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -84,44 +86,36 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
         ENTER YOUR PARADOX:
       </div>
       
-      <form onSubmit={handleSubmit} className="input-container" onClick={handleContainerClick}>
-        <div className="relative flex-1 flex items-center">
-          <span className="text-neonGreen mr-2">{'>'}</span>
-          <div className="relative flex-1">
-            <input
-              ref={inputRef}
-              type="text"
-              value={value}
-              onChange={onChange}
-              placeholder="Enter your paradox..."
-              className={`message-input w-full ${glitchInput ? 'glitch' : ''}`}
-              disabled={isLoading}
-              data-text={value}
-            />
-            {/* Hidden span to measure text width */}
-            <span 
-              ref={textRef} 
-              className="absolute opacity-0 top-0 left-0 whitespace-pre"
-              style={{ 
-                font: inputRef.current ? 
-                  window.getComputedStyle(inputRef.current).font : 
-                  "'Press Start 2P', Courier, monospace"
-              }}
-            >
-              {value}
-            </span>
-            {/* Custom cursor that follows the text */}
-            <span 
-              className={`absolute text-neonGreen ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}
-              style={{ 
-                left: `${cursorPosition}px`,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                paddingLeft: '2px'
-              }}
-            >
-              █
-            </span>
+      <form onSubmit={handleSubmit} className="input-container">
+        <div className="relative flex-1 flex items-start">
+          <span className="text-neonGreen mr-2 mt-3">{'>'}</span>
+          <div className="relative flex-1 overflow-visible" onClick={handleContainerClick}>
+            <div className="input-display-container">
+              <div className="input-display">
+                {!value && !isFocused ? (
+                  <span className="custom-placeholder">Enter your paradox...</span>
+                ) : (
+                  <>
+                    <span>{value}</span>
+                    {isFocused && !isLoading && (
+                      <span className={`custom-caret ${showCaret ? 'visible' : 'hidden'}`}>█</span>
+                    )}
+                  </>
+                )}
+              </div>
+              <textarea
+                ref={inputRef}
+                value={value}
+                onChange={onChange}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder=""
+                className={`message-input w-full ${glitchInput ? 'glitch' : ''}`}
+                disabled={isLoading}
+                data-text={value}
+                rows="1"
+              />
+            </div>
           </div>
         </div>
         
@@ -133,19 +127,6 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
           {isLoading ? 'PROCESSING...' : 'TRANSMIT'}
         </button>
       </form>
-      
-      {/* Random system messages
-      {Math.random() > 0.8 && !isLoading && (
-        <div className="text-xs text-paradox-secondary font-terminal mt-2 opacity-70 animate-pulse-slow">
-          {[
-            "SYSTEM: REALITY BUFFER OVERFLOW",
-            "SYSTEM: LOGIC CIRCUITS UNSTABLE",
-            "SYSTEM: PARADOX ENGINE RUNNING HOT",
-            "SYSTEM: QUANTUM FLUCTUATIONS DETECTED",
-            "SYSTEM: COHERENCE FILTERS DISABLED",
-          ][Math.floor(Math.random() * 5)]}
-        </div>
-      )} */}
     </div>
   );
 };

@@ -9,16 +9,16 @@ import './App.css';
  */
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Simulate loading time to enhance user experience
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
-    
+    }, 1000); // Almost instant - boot sequence appears for just 100ms
+
     return () => clearTimeout(timer);
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-paradox-dark text-paradox-light">
       {isLoading ? <LoadingScreen /> : <ThoughtfulChat />}

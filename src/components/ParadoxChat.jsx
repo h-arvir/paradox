@@ -166,9 +166,9 @@ const ParadoxChat = () => {
           }
         } else {
           clearInterval(typingInterval);
-          setTimeout(() => setBootSequence(false), 800);
+          setTimeout(() => setBootSequence(false), 300);
         }
-      }, 40);
+      }, 15);
       
       return () => clearInterval(typingInterval);
     }
@@ -227,7 +227,7 @@ const ParadoxChat = () => {
         </pre>
         <h1 
           className="glitch" 
-          data-text="Chat With Me Nigga"
+          data-text="Thoughtful Conversations"
           style={{
             fontSize: "1.25rem",
             fontFamily: "'Press Start 2P', Courier, monospace",
@@ -238,18 +238,8 @@ const ParadoxChat = () => {
             letterSpacing: "0.2em"
           }}
         >
-          Chat With Me Nigga
+          Thoughtful Conversations
         </h1>
-        {/* <p style={{
-          fontSize: "0.75rem",
-          textAlign: "center",
-          color: "#00FF41",
-          opacity: "0.7",
-          marginTop: "0.5rem",
-          fontFamily: "'Press Start 2P', Courier, monospace"
-        }}>
-          Where logic loops and reason unravels
-        </p> */}
         <div style={{
           width: "100%",
           borderTop: "1px solid #00FF41",
@@ -312,8 +302,7 @@ const ParadoxChat = () => {
             <TypingIndicator />
           </div>
         )}
-        
-        {/* Back to bottom button removed as requested */}
+
       </div>
       
       <ChatInput

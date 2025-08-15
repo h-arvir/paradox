@@ -76,8 +76,8 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
         <ProgressiveText 
           text={processedText} 
           isUser={false} 
-          typingSpeed={20} // Slightly faster typing for long messages
-          paragraphDelay={300}
+          typingSpeed={8} // Much faster typing for long messages
+          paragraphDelay={150}
         />
       );
     }
@@ -89,8 +89,8 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
         <ProgressiveText 
           text={processedText} 
           isUser={false} 
-          typingSpeed={30}
-          paragraphDelay={300}
+          typingSpeed={10}
+          paragraphDelay={150}
         />
       );
     }
@@ -100,7 +100,7 @@ const ChatMessage = ({ message, glitchEffect = false }) => {
       <TypewriterText 
         text={processedText} 
         isUser={false}
-        speed={30}
+        speed={10}
         onComplete={() => setAnimationComplete(true)}
       />
     );

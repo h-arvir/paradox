@@ -10,14 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <title>The Infinite Paradox Chat</title>
     <style>
-      /* Disable text selection for better glitch effects */
-      * {
+      /* Disable text selection for better glitch effects, but allow it for inputs */
+      body :not(input, textarea) * {
         user-select: none;
-      }
+      } */
       
-      /* Custom cursor */
+      /* Custom cursor for everything except inputs */
       body {
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='8' height='8' x='0' y='0' fill='%2300FF41' /><rect width='8' height='8' x='8' y='8' fill='%2300FF41' /></svg>") 8 8, auto;
+      }
+      
+      /* Ensure inputs and textareas have the default cursor */
+      input, textarea {
+        cursor: text !important;
       }
     </style>
   </head>

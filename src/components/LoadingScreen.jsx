@@ -12,9 +12,27 @@ const LoadingScreen = () => {
       </h1>
       
       <div className="flex space-x-2 mb-4">
-        <div className="w-3 h-3 rounded-full bg-paradox-primary animate-pulse" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-3 h-3 rounded-full bg-paradox-secondary animate-pulse" style={{ animationDelay: '300ms' }}></div>
-        <div className="w-3 h-3 rounded-full bg-paradox-accent animate-pulse" style={{ animationDelay: '600ms' }}></div>
+        <div 
+          className="w-3 h-3 rounded-full bg-paradox-primary" 
+          style={{ 
+            animationDelay: '0ms',
+            animation: 'pulse 0.25s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
+        ></div>
+        <div 
+          className="w-3 h-3 rounded-full bg-paradox-secondary" 
+          style={{ 
+            animationDelay: '50ms',
+            animation: 'pulse 0.25s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
+        ></div>
+        <div 
+          className="w-3 h-3 rounded-full bg-paradox-accent" 
+          style={{ 
+            animationDelay: '100ms',
+            animation: 'pulse 0.25s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
+        ></div>
       </div>
       
       <p className="text-gray-400 text-center max-w-md">

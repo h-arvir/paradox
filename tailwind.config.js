@@ -21,6 +21,7 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glitch': 'glitch 1s infinite linear alternate-reverse',
         'blink': 'blink 1s infinite',
         'scanline': 'scanline 8s linear infinite',

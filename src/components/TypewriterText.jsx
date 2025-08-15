@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
  * Component for rendering text with a typewriter animation effect
  * @param {Object} props - Component props
  * @param {string} props.text - The text to animate
- * @param {number} props.speed - The typing speed in milliseconds (default: 30)
+ * @param {number} props.speed - The typing speed in milliseconds (default: 10)
  * @param {boolean} props.isUser - Whether this is user text (no animation for user text)
  * @param {Function} props.onComplete - Callback when animation completes
  * @returns {JSX.Element} The rendered component
  */
 const TypewriterText = ({ 
   text, 
-  speed = 30, 
+  speed = 10, 
   isUser = false, 
   onComplete = () => {} 
 }) => {
@@ -20,10 +20,6 @@ const TypewriterText = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const animationRef = useRef(null);
   const textContainerRef = useRef(null);
-  
-  // We'll completely remove auto-scrolling from the TypewriterText component
-  // and let the parent component (ParadoxChat) handle all scrolling
-  // This prevents competing scroll behaviors and flickering
   
   // For user messages, just show the full text immediately
   useEffect(() => {
@@ -40,16 +36,16 @@ const TypewriterText = ({
       const currentChar = text[currentIndex];
       let typingSpeed = speed;
       
-      // Pause longer at the end of sentences and paragraphs
+      // Shorter pauses at the end of sentences and paragraphs
       if (currentChar === '.' || currentChar === '!' || currentChar === '?') {
-        typingSpeed = speed * 5; // Longer pause after sentence endings
+        typingSpeed = speed * 2; // Shorter pause after sentence endings
       } else if (currentChar === '\n') {
-        typingSpeed = speed * 3; // Pause at line breaks
+        typingSpeed = speed * 1.5; // Shorter pause at line breaks
       } else if (currentChar === ' ') {
-        typingSpeed = speed * 1.5; // Slight pause at spaces
-      } else if (Math.random() < 0.05) {
-        // Occasionally add a slight random delay for more human-like typing
-        typingSpeed = speed * 2;
+        typingSpeed = speed * 1.2; // Very slight pause at spaces
+      } else if (Math.random() < 0.03) {
+        // Occasionally add a slight random delay (less frequently)
+        typingSpeed = speed * 1.5;
       }
       
       animationRef.current = setTimeout(() => {
