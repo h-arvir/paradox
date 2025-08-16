@@ -15,6 +15,7 @@ import { hasValidApiKey, refreshApiKey } from '../services/aiService';
 const ParadoxChat = () => {
   const [apiKeyError, setApiKeyError] = useState(false);
   const [showApiKeySettings, setShowApiKeySettings] = useState(false);
+  const [showApiKeyTooltip, setShowApiKeyTooltip] = useState(false);
   const [bootSequence, setBootSequence] = useState(true);
   const [bootText, setBootText] = useState('');
   
@@ -136,23 +137,39 @@ const ParadoxChat = () => {
     return () => clearTimeout(scrollTimeout);
   }, [isLoading, userHasScrolled, scrollLocked, lastScrollTop]);
   
-  // Check if API key is missing or invalid
+  // Check if API key is missing or invalid and show tooltip
   useEffect(() => {
-    if (!hasValidApiKey()) {
-      setApiKeyError(true);
-    }
-  }, []);
+    const checkApiKey = () => {
+      const hasKey = hasValidApiKey();
+      setApiKeyError(!hasKey);
+      if (!hasKey && !bootSequence) {
+        setShowApiKeyTooltip(true);
+      } else if (hasKey) {
+        setShowApiKeyTooltip(false);
+      }
+    };
+    
+    checkApiKey();
+    
+    // Set up an interval to periodically check for API key changes
+    const interval = setInterval(checkApiKey, 1000);
+    return () => clearInterval(interval);
+  }, [bootSequence]);
+
+
 
   // Handle API key set
   const handleApiKeySet = (newApiKey) => {
     refreshApiKey();
     setApiKeyError(false);
     setShowApiKeySettings(false);
+    setShowApiKeyTooltip(false);
   };
 
   // Handle opening API key settings
   const handleOpenApiKeySettings = () => {
     setShowApiKeySettings(true);
+    setShowApiKeyTooltip(false);
   };
 
   // Boot sequence animation
@@ -196,77 +213,7 @@ const ParadoxChat = () => {
     }
   }, [bootSequence]);
   
-  // If there's an API key error, show the API key settings
-  if (apiKeyError && !showApiKeySettings) {
-    return (
-      <div className="chat-container">
-        <div className="flex flex-col items-center justify-center min-h-screen text-center">
-          <div className="mb-8">
-            <pre 
-              className="glitch" 
-              data-text=""
-              style={{
-                color: "#00FF41",
-                textAlign: "center",
-                fontSize: "0.75rem",
-                marginBottom: "0.5rem"
-              }}
-            >
-{`
-    ____  ____  ____  ____  
-  ||T ||||H ||||Y ||||N ||
-  ||__||||__||||__||||__||
-  |/__\\||/__\\||/__\\||/__\\|
-`}
-            </pre>
-            <h1 
-              className="glitch" 
-              data-text="API Key Required"
-              style={{
-                fontSize: "1.25rem",
-                fontFamily: "'Press Start 2P', Courier, monospace",
-                textAlign: "center",
-                color: "#FF00FF",
-                marginBottom: "1rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.2em"
-              }}
-            >
-              API Key Required
-            </h1>
-          </div>
-          
-          <div className="bg-gray-900 border-2 border-red-400 p-6 max-w-md mx-4 font-mono">
-            <div className="text-red-400 mb-4">
-              <p className="text-sm mb-2">AUTHENTICATION ERROR</p>
-              <p className="text-xs mb-4">
-                No valid Gemini API key found. You need to configure an API key to use this application.
-              </p>
-            </div>
-            
-            <button
-              onClick={handleOpenApiKeySettings}
-              className="w-full bg-green-400 text-black px-4 py-2 text-sm font-bold hover:bg-green-300 mb-2"
-            >
-              CONFIGURE API KEY
-            </button>
-            
-            <div className="text-green-400 text-xs mt-4">
-              <p className="mb-2">
-                <strong>Get your free API key:</strong>
-              </p>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Visit <span className="text-green-300">ai.google.dev</span></li>
-                <li>Sign in with Google</li>
-                <li>Create a new API key</li>
-                <li>Click "Configure API Key" above</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
   
   // If there's an error from the hook, show it
   if (error) {
@@ -348,22 +295,57 @@ const ParadoxChat = () => {
           alignItems: "center", 
           gap: "0.5rem" 
         }}>
-          <button
-            onClick={handleOpenApiKeySettings}
-            style={{
-              fontSize: "0.6rem",
-              color: "#00FF41",
-              fontFamily: "'Press Start 2P', Courier, monospace",
-              background: "none",
-              border: "1px solid #00FF41",
-              padding: "0.25rem 0.5rem",
-              cursor: "pointer",
-              marginRight: "0.5rem"
-            }}
-            className="hover:bg-green-400 hover:text-black"
-          >
-            API
-          </button>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={handleOpenApiKeySettings}
+              style={{
+                fontSize: "0.6rem",
+                color: "#00FF41",
+                fontFamily: "'Press Start 2P', Courier, monospace",
+                background: "none",
+                border: "1px solid #00FF41",
+                padding: "0.25rem 0.5rem",
+                cursor: "pointer",
+                marginRight: "0.5rem"
+              }}
+              className="hover:bg-green-400 hover:text-black"
+            >
+              API
+            </button>
+            
+            {/* API Key Configuration Tooltip */}
+            {showApiKeyTooltip && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: "0",
+                  marginTop: "0.5rem",
+                  backgroundColor: "#000000",
+                  border: "2px solid #FF00FF",
+                  padding: "0.75rem",
+                  fontSize: "0.5rem",
+                  fontFamily: "'Press Start 2P', Courier, monospace",
+                  color: "#FF00FF",
+                  width: "220px",
+                  zIndex: 1000,
+                  animation: "pulse 2s infinite"
+                }}
+                className="glitch"
+                data-text="CONFIGURE API KEY"
+              >
+                <div style={{ marginBottom: "0.5rem", color: "#FFFF00" }}>
+                  ⚠ API KEY REQUIRED
+                </div>
+                <div style={{ marginBottom: "0.5rem", fontSize: "0.45rem", lineHeight: "1.3" }}>
+                  Click API button to configure your Gemini API key for full functionality
+                </div>
+                <div style={{ fontSize: "0.4rem", color: "#00FFFF" }}>
+                  Get free key at ai.google.dev
+                </div>
+              </div>
+            )}
+          </div>
           <span style={{
             fontSize: "0.75rem",
             color: "#00FF41",
@@ -405,6 +387,8 @@ const ParadoxChat = () => {
         onChange={handleInputChange}
         onSubmit={handleSubmitWithScroll}
         isLoading={isLoading}
+        apiKeyMissing={apiKeyError}
+        onApiKeyClick={handleOpenApiKeySettings}
       />
       
       <div style={{

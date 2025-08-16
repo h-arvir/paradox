@@ -7,9 +7,11 @@ import React, { useState, useEffect, useRef } from 'react';
  * @param {Function} props.onChange - Handler for input changes
  * @param {Function} props.onSubmit - Handler for form submission
  * @param {boolean} props.isLoading - Whether a response is currently loading
+ * @param {boolean} props.apiKeyMissing - Whether API key is missing
+ * @param {Function} props.onApiKeyClick - Handler for API key configuration
  * @returns {JSX.Element} The rendered component
  */
-const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
+const ChatInput = ({ value, onChange, onSubmit, isLoading, apiKeyMissing, onApiKeyClick }) => {
   const [glitchInput, setGlitchInput] = useState(false);
   const [showCaret, setShowCaret] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -63,6 +65,11 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (apiKeyMissing) {
+      // If API key is missing, show the API key settings instead
+      onApiKeyClick();
+      return;
+    }
     if (!isLoading && value.trim()) {
       // Add glitch effect when submitting
       setGlitchInput(true);
@@ -73,9 +80,11 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
     }
   };
   
-  // Handle click on container to focus input
+  // Handle click on container to focus input or show API config
   const handleContainerClick = () => {
-    if (inputRef.current) {
+    if (apiKeyMissing) {
+      onApiKeyClick();
+    } else if (inputRef.current) {
       inputRef.current.focus();
     }
   };
@@ -101,7 +110,9 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
             <div className="input-display-container">
               <div className="input-display">
                 {!value && !isFocused ? (
-                  <span className="custom-placeholder">Enter your paradox...</span>
+                  <span className="custom-placeholder">
+                    {apiKeyMissing ? "Configure API key to start chatting..." : "Enter your paradox..."}
+                  </span>
                 ) : (
                   <>
                     <span>{value}</span>
@@ -120,7 +131,7 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
                 onBlur={() => setIsFocused(false)}
                 placeholder=""
                 className={`message-input w-full ${glitchInput ? 'glitch' : ''}`}
-                disabled={isLoading}
+                disabled={isLoading || apiKeyMissing}
                 data-text={value}
                 rows="1"
               />
@@ -131,9 +142,9 @@ const ChatInput = ({ value, onChange, onSubmit, isLoading }) => {
         <button 
           type="submit" 
           className="send-button"
-          disabled={isLoading || !value.trim()}
+          disabled={isLoading || (!apiKeyMissing && !value.trim())}
         >
-          {isLoading ? 'PROCESSING...' : 'TRANSMIT'}
+          {isLoading ? 'PROCESSING...' : (apiKeyMissing ? 'CONFIG API' : 'TRANSMIT')}
         </button>
       </form>
     </div>
